@@ -6,4 +6,5 @@ export default defineCliConfig({
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET as string,
   },
   autoUpdates: true,
+  studioHost: 'bergenworks',
 })
