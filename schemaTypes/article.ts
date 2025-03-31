@@ -29,12 +29,42 @@ export default {
       title: 'Release date',
       type: 'datetime',
       options: {
-        dateFormat: ' D. MMM. Do YYYY ',
+        dateFormat: ' D. MMM. YYYY ',
         locale: 'no',
       },
       validation: (Rule: Rule) => Rule.required().error('Date is required'),
     },
+    {
+      name: 'category',
+      title: 'Category',
+      type: 'object',
+      fields: [
+        {
+          title: 'Category',
+          name: 'category',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Inkubator', value: 'incubator'},
+              {title: 'Coworking', value: 'coworking'},
+              {title: 'Medlemmer', value: 'medlemmer'},
+            ],
+          },
+        },
+      ],
+    },
+    {
+      name: 'author',
+      title: 'Author',
+      type: 'string',
+    },
 
+    {
+      name: 'tags',
+      title: 'Tags',
+      type: 'array',
+      of: [{name: 'tag', type: 'string', title: 'Tag'}],
+    },
     {
       name: 'images',
       title: 'Images',
