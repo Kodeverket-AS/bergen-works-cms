@@ -82,8 +82,15 @@ export default {
             {
               name: 'alt',
               type: 'string',
-              title: 'Alternative text',
+              title: 'Alternative text/img name',
             },
+            {
+             name: 'slug',
+          type: 'slug',
+          title: 'Image Slug',
+          options: {
+            source: 'alt', 
+          }}
           ],
         },
       ],
