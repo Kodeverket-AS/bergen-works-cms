@@ -11,12 +11,19 @@ export default {
       type: 'string',
       validation: (Rule: Rule) => Rule.required().error('Title is required'),
     },
+
     {
       name: 'articleBody',
       title: 'Article Body',
-      type: 'string',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
       validation: (Rule: Rule) => Rule.required().error('Article body is required'),
     },
+
     {
       name: 'background',
       title: 'Background',
@@ -85,12 +92,13 @@ export default {
               title: 'Alternative text/img name',
             },
             {
-             name: 'slug',
-          type: 'slug',
-          title: 'Image Slug',
-          options: {
-            source: 'alt', 
-          }}
+              name: 'slug',
+              type: 'slug',
+              title: 'Image Slug',
+              options: {
+                source: 'alt',
+              },
+            },
           ],
         },
       ],
