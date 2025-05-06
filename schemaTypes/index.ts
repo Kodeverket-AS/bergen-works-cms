@@ -1,5 +1,4 @@
-import exampleSchema from './exampleSchema'
+import article from './article'
+import event from './event'
 
-export const schemaTypes = [
-  exampleSchema
-]
+export const schemaTypes = [article, event]

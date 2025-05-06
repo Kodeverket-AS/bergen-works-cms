@@ -1,5 +1,5 @@
 {
   "path": "schemaTypes/*.{ts,tsx,js,jsx}",
-  "schema": "types/schema.json",
-  "generates": "types/sanity.types.ts"
+  "schema": "export/schema.json",
+  "generates": "export/sanity.types.ts"
 }
