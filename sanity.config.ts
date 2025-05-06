@@ -11,7 +11,7 @@ export default defineConfig([
     name: 'production-workspace',
     basePath: '/production',
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'nur5m2dg',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production',
+    dataset: 'production',
     plugins: [structureTool({structure}), visionTool()],
     schema: {
       types: schemaTypes,
@@ -23,7 +23,7 @@ export default defineConfig([
     name: 'development-workspace',
     basePath: '/development',
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? 'nur5m2dg',
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'development',
+    dataset: 'development',
     plugins: [structureTool({structure}), visionTool()],
     schema: {
       types: schemaTypes,
