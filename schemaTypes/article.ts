@@ -1,4 +1,5 @@
 import {Rule} from '@sanity/types'
+import {isUniqueAcrossAllDocuments} from '../utils/isSlugUnique'
 
 export default {
   name: 'article',
@@ -10,6 +11,34 @@ export default {
       title: 'Title',
       type: 'string',
       validation: (Rule: Rule) => Rule.required().error('Title is required'),
+    },
+    {
+      name: 'slug',
+      type: 'slug',
+      title: 'Slug',
+      options: {
+        isUnique: isUniqueAcrossAllDocuments,
+        source: 'title',
+        maxLength: 100,
+        slugify: (input: string) =>
+          input
+            .toLowerCase()
+            .normalize('NFD') // Bryter ned spesialtegn til base + diakritika
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/æ/g, 'ae')
+            .replace(/ø/g, 'oe')
+            .replace(/å/g, 'aa')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .slice(0, 200),
+      },
+      validation: (rule: Rule) => [
+        rule
+          .required()
+          .error('Identifikasjon er ikke unik nok, prøv å endre tittel og så trykk generate'),
+      ],
     },
     {
       name: 'articleBody',
