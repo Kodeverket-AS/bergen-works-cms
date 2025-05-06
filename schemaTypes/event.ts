@@ -1,3 +1,5 @@
+import {Rule} from 'sanity'
+
 export default {
   name: 'event',
   title: 'Event',
@@ -7,7 +9,7 @@ export default {
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'description',
@@ -22,7 +24,7 @@ export default {
         dateFormat: ' D. MMM. YYYY ',
         locale: 'no',
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'location',
