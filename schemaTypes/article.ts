@@ -11,7 +11,23 @@ export default {
       type: 'string',
       validation: (Rule: Rule) => Rule.required().error('Title is required'),
     },
-
+    {
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+        slugify: (input: string) =>
+          input
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .slice(0, 96),
+      },
+      validation: (Rule: Rule) => Rule.required().error('Slug is required'),
+    },
     {
       name: 'articleBody',
       title: 'Article Body',
