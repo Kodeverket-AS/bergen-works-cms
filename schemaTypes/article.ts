@@ -1,5 +1,5 @@
 import {Rule} from '@sanity/types'
-import imageTextBlocks from './blocks/imageTextblocks'
+import imageTextBlocks from './blocks/imageTextBlocks'
 
 
 export default {
@@ -13,6 +13,7 @@ export default {
       type: 'string',
       validation: (Rule: Rule) => Rule.required().error('Title is required'),
     },
+
     {
       name: 'slug',
       title: 'Slug',
