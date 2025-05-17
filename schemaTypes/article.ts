@@ -1,4 +1,6 @@
 import {Rule} from '@sanity/types'
+import imageTextBlocks from './blocks/imageTextblocks'
+
 
 export default {
   name: 'article',
@@ -33,16 +35,12 @@ export default {
       title: 'Article Body',
       type: 'array',
       of: [
-        {
-          type: 'block',
-        },
-        {
-          type: 'image',
-        },
+        { type: 'block' },
+        { type: 'image' },
+        ...imageTextBlocks,
       ],
       validation: (Rule: Rule) => Rule.required().error('Article body is required'),
     },
-
     {
       name: 'background',
       title: 'Background',
@@ -84,7 +82,6 @@ export default {
       title: 'Author',
       type: 'string',
     },
-
     {
       name: 'tags',
       title: 'Tags',
@@ -95,7 +92,6 @@ export default {
       name: 'images',
       title: 'Images',
       type: 'array',
-
       of: [
         {
           name: 'image',
