@@ -24,10 +24,16 @@ export default {
         slugify: (input: string) =>
           input
             .toLowerCase()
+            .normalize('NFD') // Bryter ned spesialtegn til base + diakritika
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/æ/g, 'ae')
+            .replace(/ø/g, 'oe')
+            .replace(/å/g, 'aa')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
             .replace(/\s+/g, '-')
-            .replace(/[^\w\-]+/g, '')
-            .replace(/\-\-+/g, '-')
-            .slice(0, 96),
+            .replace(/-+/g, '-')
+            .slice(0, 200),
       },
       validation: (Rule: Rule) => Rule.required().error('Slug is required'),
     },
@@ -35,11 +41,7 @@ export default {
       name: 'articleBody',
       title: 'Article Body',
       type: 'array',
-      of: [
-        { type: 'block' },
-        { type: 'image' },
-        ...imageTextBlocks,
-      ],
+      of: [{type: 'block'}, {type: 'image'}, ...imageTextBlocks],
       validation: (Rule: Rule) => Rule.required().error('Article body is required'),
     },
     {
