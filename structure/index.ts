@@ -45,5 +45,15 @@ export const structure: StructureResolver = (S) =>
         .title('Articles')
         .schemaType('article')
         .icon(ComposeIcon)
-        .child(S.documentTypeList('article').title('Articles'))
+        .child(S.documentTypeList('article').title('Articles')),
+
+        S.divider(),
+    
+        S.listItem()
+          .title('Vipps Card')
+          .schemaType('vippsCard')
+          .icon(ComposeIcon)
+          .child(S.documentTypeList('vippsCard').title('Vipps Card'))
     ])
+
+   
