@@ -68,6 +68,22 @@ export type Geopoint = {
   alt?: number
 }
 
+export type VippsCard = {
+  _id: string
+  _type: 'vippsCard'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  description?: string
+  details?: {
+    price?: number
+    unitType?: 'time' | 'dag' | 'uke' | 'mnd' | '\xE5r'
+    unitAmount?: number
+  }
+  url?: string
+}
+
 export type Event = {
   _id: string
   _type: 'event'
@@ -233,6 +249,7 @@ export type AllSanitySchemaTypes =
   | SanityImageDimensions
   | SanityFileAsset
   | Geopoint
+  | VippsCard
   | Event
   | Article
   | Slug
