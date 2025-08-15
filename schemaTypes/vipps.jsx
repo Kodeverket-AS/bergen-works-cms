@@ -1,14 +1,18 @@
+import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
+
 export default {
   title: 'Vipps Card',
   name: 'vippsCard',
   type: 'document',
+  orderings: [orderRankOrdering],
   initialValue: {
     details: {
-      period: 'monthly',
-      duration: 1,
+      unitType: 'monthly',
+      unitAmount: 1,
     },
   },
   fields: [
+    orderRankField({type: 'category', newItemPosition: 'before'}),
     {
       title: 'Tittel på kortet',
       name: 'title',
@@ -65,11 +69,11 @@ export default {
             'Velg ønsket periode type for pakke, brukes for å vise pris per enhet. F.eks: 1000,- / mnd',
           options: {
             list: [
-              {title: 'Timer', value: 'time'},
-              {title: 'Dager', value: 'dag'},
-              {title: 'Uker', value: 'uke'},
-              {title: 'Måneder', value: 'mnd'},
-              {title: 'År', value: 'år'},
+              {title: 'Time', value: 'hourly'},
+              {title: 'Dag', value: 'daily'},
+              {title: 'Uke', value: 'weekly'},
+              {title: 'Måned', value: 'monthly'},
+              {title: 'År', value: 'yearly'},
             ],
             layout: 'radio',
             direction: 'horizontal',
@@ -115,13 +119,28 @@ export default {
     select: {
       title: 'title',
       price: 'details.price',
-      period: 'details.period',
-      duration: 'details.duration',
+      unitType: 'details.unitType',
+      unitAmount: 'details.unitAmount',
     },
-    prepare({title, price, period, duration}) {
+    prepare({title, price, unitType, unitAmount = 1}) {
+      // Map each unit to its singular/plural labels
+      const UNIT_LABELS = {
+        hourly: {single: 'time', plural: 'timer'},
+        daily: {single: 'dag', plural: 'dager'},
+        weekly: {single: 'uke', plural: 'uker'},
+        monthly: {single: 'mnd', plural: 'mnd'},
+        yearly: {single: 'år', plural: 'år'},
+      }
+
+      // Grap the correct label
+      const unitLabel =
+        (UNIT_LABELS[unitType] && UNIT_LABELS[unitType][unitAmount > 1 ? 'plural' : 'single']) ||
+        unitType
+      const unitCombined = `${unitAmount > 1 ? unitAmount + ' ' : ''}${unitLabel}`
+
       return {
         title: title || 'Uten tittel',
-        subtitle: `${price},- / ${duration > 1 ? duration + ' ' : ''}${period}`,
+        subtitle: price + ',- / ' + unitCombined,
       }
     },
   },
