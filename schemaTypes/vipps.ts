@@ -75,6 +75,7 @@ export default {
               {title: 'Uke', value: 'weekly'},
               {title: 'Måned', value: 'monthly'},
               {title: 'År', value: 'yearly'},
+              {title: 'Ingen periode', value: 'na'},
             ],
             layout: 'radio',
             direction: 'horizontal',
@@ -95,7 +96,7 @@ export default {
               .max(365)
               .error('Varighet må være et heltall mellom 1 og 365.'),
           hidden: ({parent}: {parent: {unitType: string | undefined}}) =>
-            parent?.unitType === 'none',
+            parent?.unitType === 'na',
         },
       ],
       validation: (Rule: Rule) => Rule.required().error('Fyll ut pakkeinformasjon.'),
