@@ -1,7 +1,8 @@
 import {StructureResolver} from 'sanity/structure'
-import {CalendarIcon, ComposeIcon} from '@sanity/icons'
+import {CalendarIcon, ComposeIcon, CreditCardIcon} from '@sanity/icons'
+import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .id('root')
     .title('Content')
@@ -34,9 +35,11 @@ export const structure: StructureResolver = (S) =>
         .schemaType('article')
         .icon(ComposeIcon)
         .child(S.documentTypeList('article').title('Articles')),
-      S.listItem()
-        .title('Vipps Kort')
-        .schemaType('vippsCard')
-        .icon(ComposeIcon)
-        .child(S.documentTypeList('vippsCard').title('Kort')),
+      orderableDocumentListDeskItem({
+        type: 'vippsCard',
+        title: 'Vipps Kort',
+        icon: CreditCardIcon,
+        S,
+        context,
+      }),
     ])
