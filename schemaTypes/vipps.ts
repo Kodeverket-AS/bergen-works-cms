@@ -1,21 +1,26 @@
+import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
+import {Rule} from 'sanity'
+
 export default {
   title: 'Vipps Card',
   name: 'vippsCard',
   type: 'document',
+  orderings: [orderRankOrdering],
   initialValue: {
     details: {
-      period: 'monthly',
-      duration: 1,
+      unitType: 'monthly',
+      unitAmount: 1,
     },
   },
   fields: [
+    orderRankField({type: 'category', newItemPosition: 'before'}),
     {
       title: 'Tittel på kortet',
       name: 'title',
       type: 'string',
       description:
         'Kort og tydelig navn på tjenesten. Vises på knappen/kortet og i Sanity for å skille mellom tjenester. (Maks 60 tegn)',
-      validation: (Rule) =>
+      validation: (Rule: Rule) =>
         Rule.required().min(3).max(60).error('Skriv en kort og tydelig tittel (3-60 tegn).'),
     },
     {
@@ -25,7 +30,7 @@ export default {
       description:
         'Forklar hva kunden får. Denne teksten vises i modal når brukeren klikker «Vis mer». Skriv konkret og lett å forstå (anbefalt 40-400 tegn).',
       rows: 4,
-      validation: (Rule) => [
+      validation: (Rule: Rule) => [
         Rule.required().error('Beskrivelse er påkrevd.'),
         Rule.min(40).warning('Beskrivelsen er veldig kort - vurder å utdype.'),
         Rule.max(400).warning('Vurder å korte ned teksten.'),
@@ -49,7 +54,7 @@ export default {
           type: 'number',
           description:
             'Total pris inkludert mva. Skriv kun tall (ikke «kr» eller bindestrek). Bruk punktum for desimaler, f.eks. 199.50.',
-          validation: (Rule) =>
+          validation: (Rule: Rule) =>
             Rule.required()
               .positive()
               .precision(2)
@@ -65,16 +70,17 @@ export default {
             'Velg ønsket periode type for pakke, brukes for å vise pris per enhet. F.eks: 1000,- / mnd',
           options: {
             list: [
-              {title: 'Timer', value: 'time'},
-              {title: 'Dager', value: 'dag'},
-              {title: 'Uker', value: 'uke'},
-              {title: 'Måneder', value: 'mnd'},
-              {title: 'År', value: 'år'},
+              {title: 'Time', value: 'hourly'},
+              {title: 'Dag', value: 'daily'},
+              {title: 'Uke', value: 'weekly'},
+              {title: 'Måned', value: 'monthly'},
+              {title: 'År', value: 'yearly'},
+              {title: 'Ingen periode', value: 'na'},
             ],
             layout: 'radio',
             direction: 'horizontal',
           },
-          validation: (Rule) => Rule.required().error('Velg en periodetype.'),
+          validation: (Rule: Rule) => Rule.required().error('Velg en periodetype.'),
         },
         {
           title: 'Varighet (antall perioder)',
@@ -83,28 +89,30 @@ export default {
           description:
             'Antall perioder denne pakken gjelder for. Eksempel: 5 (dager) eller 12 (måneder). La stå som 1 hvis det ikke er en flerperiode.',
           initialValue: 1,
-          validation: (Rule) =>
+          validation: (Rule: Rule) =>
             Rule.required()
               .integer()
               .min(1)
               .max(365)
               .error('Varighet må være et heltall mellom 1 og 365.'),
+          hidden: ({parent}: {parent: {unitType: string | undefined}}) =>
+            parent?.unitType === 'na',
         },
       ],
-      validation: (Rule) => Rule.required().error('Fyll ut pakkeinformasjon.'),
+      validation: (Rule: Rule) => Rule.required().error('Fyll ut pakkeinformasjon.'),
     },
     {
       title: 'Vipps-lenke',
       name: 'url',
       type: 'url',
       description: 'Lim inn lenken fra Vipps. Støtter https://-lenker (Vipps på Nett/Checkout)',
-      validation: (Rule) =>
+      validation: (Rule: Rule) =>
         Rule.required()
           .uri({
             scheme: ['https'],
             allowRelative: false,
           })
-          .custom((value) => {
+          .custom((value: string | undefined) => {
             if (!value) return true
             const isVippsHost = /^https:\/\/([^/]+\.)*vipps\.[^/]+(\/|$)/i.test(value)
             return isVippsHost || 'URL må være en Vipps-lenke (f.eks. https://betal.vipps.no/...)'
@@ -115,13 +123,47 @@ export default {
     select: {
       title: 'title',
       price: 'details.price',
-      period: 'details.period',
-      duration: 'details.duration',
+      unitType: 'details.unitType',
+      unitAmount: 'details.unitAmount',
     },
-    prepare({title, price, period, duration}) {
+    prepare({
+      title,
+      price,
+      unitType,
+      unitAmount = 1,
+    }: {
+      title: string | undefined
+      price: number | undefined
+      unitType: string
+      unitAmount: number
+    }) {
+      // Map each unit to its singular/plural labels
+      const UNIT_LABELS = {
+        hourly: {single: 'time', plural: 'timer'},
+        daily: {single: 'dag', plural: 'dager'},
+        weekly: {single: 'uke', plural: 'uker'},
+        monthly: {single: 'måned', plural: 'måneder'},
+        yearly: {single: 'år', plural: 'år'},
+      }
+
+      // Type helpers
+      type UnitLabelIndex = keyof typeof UNIT_LABELS
+
+      // Grap the correct label
+      const unitCategory = unitAmount > 1 ? 'plural' : 'single'
+      const unitLabel =
+        (UNIT_LABELS[unitType as UnitLabelIndex] &&
+          UNIT_LABELS[unitType as UnitLabelIndex][unitCategory]) ||
+        ''
+
+      // Construct units strings
+      const unitAmountAdjusted = unitLabel.length ? (unitAmount > 1 ? unitAmount + ' ' : '') : ''
+      const unitCombined = `${unitLabel.length ? ' / ' : ''}${unitAmountAdjusted}${unitLabel}`
+
+      // Construct preview card
       return {
         title: title || 'Uten tittel',
-        subtitle: `${price},- / ${duration > 1 ? duration + ' ' : ''}${period}`,
+        subtitle: price + ',-' + unitCombined,
       }
     },
   },
